@@ -1,0 +1,40 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Java CI with Maven Farm Management Service
+
+on:
+  push:
+    branches: [ "farm-management-service" ]
+
+
+jobs:
+  build:
+
+    runs-on: farm-management-service-runner
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: check directory
+      run: ls -a
+    - name: Build with Maven
+      run: mvn -B package --file /home/subhra/hack4change/FarmManagement/_work/Intelligent-Agriculture-Platform/Intelligent-Agriculture-Platform/backendSourceCode/FarmManagement/pom.xml
+    - name: Killing the process on 8089
+      run: sudo kill $(sudo lsof -i tcp:8089 | tr -s " " | cut -d " " -f 2 | sed -n 2p)
+      continue-on-error: true
+    - name: Running Jar
+      run: sudo java -jar /home/subhra/hack4change/FarmManagement/_work/Intelligent-Agriculture-Platform/Intelligent-Agriculture-Platform/backendSourceCode/FarmManagement/target/FarmManagement-0.0.1-SNAPSHOT.jar &
+
+    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+

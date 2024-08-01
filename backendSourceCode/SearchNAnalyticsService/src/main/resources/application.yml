@@ -1,0 +1,20 @@
+server:
+  port: 8088
+spring:
+  application:
+    name: SEARCH-ANALYTICS-SERVICE
+#  data:
+#    mongodb:
+#      uri: mongodb://royal-bengal-tigers:royal-bengal-tigers@77.37.44.176:27017/
+#      database: agriculture_db
+#      auto-index-creation: true
+      
+  threads:
+    virtual:
+      enabled: true
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://*****/eureka

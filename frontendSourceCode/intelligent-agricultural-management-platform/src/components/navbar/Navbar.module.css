@@ -1,0 +1,62 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #9dd4ff;
+  padding: 10px;
+  /* add shadow */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.appName {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.userIcon {
+  display: flex;
+  font-size: 1.8rem;
+  margin-right: 10px;
+  cursor: pointer;
+  align-items: center;
+}
+
+.userIcon h4 {
+  margin-right: 10px;
+  margin-left: 10px;
+  font-size: 20px;
+}
+
+.rightContianer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 33px;
+  right: 0;
+  background-color: #9dd4ff;
+  padding: 10px;
+}
+
+.modalItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.liIcon {
+  font-size: 1.2rem;
+  margin-right: 10px;
+}
