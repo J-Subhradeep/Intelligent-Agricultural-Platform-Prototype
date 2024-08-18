@@ -1,0 +1,32 @@
+[
+    {
+        "assignedBy": "ffe2f7b0-acf7-40ce-a20d-25211f45b8c3",
+        "assignedOn": "2024-08-18T01:54:37+05:30",
+        "assignedTo": "6a3d705e-15f5-41ec-bc4b-96e6466b1c16",
+        "deadline": "2024-08-23T01:54:37+05:30",
+        "description": "within this week",
+        "done": false,
+        "id": "f2c1038b-5ccc-4117-b702-dc15ff3090a5",
+        "title": "Submit Sales Report"
+    },
+    {
+        "assignedBy": "ffe2f7b0-acf7-40ce-a20d-25211f45b8c3",
+        "assignedOn": "2024-08-16T23:44:57+05:30",
+        "assignedTo": "6a3d705e-15f5-41ec-bc4b-96e6466b1c16",
+        "deadline": "2024-08-19T23:44:57+05:30",
+        "description": "Complete the by the end of the week.",
+        "done": false,
+        "id": "28d54c46-769d-4b18-a795-26ab06470d7a",
+        "title": "Check the irrigation systems"
+    },
+    {
+        "assignedBy": "ffe2f7b0-acf7-40ce-a20d-25211f45b8c3",
+        "assignedOn": "2024-08-16T21:58:02+05:30",
+        "assignedTo": "6a3d705e-15f5-41ec-bc4b-96e6466b1c16",
+        "deadline": "2024-08-18T21:58:02+05:30",
+        "description": "Complete the by the end of the week.",
+        "done": false,
+        "id": "9a3ede88-ab5e-4f4a-923e-a3368a7b14b0",
+        "title": "Collect the seeds and update count in the app"
+    }
+]

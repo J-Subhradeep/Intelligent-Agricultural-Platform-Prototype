@@ -23,7 +23,6 @@ const Login = (props) => {
   const saveUserDetails = async (userDetails) => {
     try {
       await AsyncStorage.setItem("userDetails", JSON.stringify(userDetails));
-      console.log("User details saved successfully");
     } catch (error) {
       console.error("Error saving user details", error);
     }
@@ -31,7 +30,6 @@ const Login = (props) => {
   const getUserDetails = async () => {
     try {
       const userDetails = await AsyncStorage.getItem("userDetails");
-      console.log("User details", userDetails);
       return userDetails ? JSON.parse(userDetails) : null;
     } catch (error) {
       console.error("Error retrieving user details", error);
@@ -55,7 +53,6 @@ const Login = (props) => {
         }
       );
       const data = await response.json();
-      console.log(data);
       if (data.success) {
         saveUserDetails(data);
         Alert.alert("Welcome", "You have successfully logged in", [
@@ -74,7 +71,6 @@ const Login = (props) => {
   // check if the user is already logged in
   useEffect(() => {
     getUserDetails().then((userDetails) => {
-      console.log("User details", userDetails);
       if (userDetails) {
         setSelectedValue(userDetails);
         router.replace("/Home");
@@ -120,24 +116,7 @@ const Login = (props) => {
           >
             Login to your account
           </Text>
-          {/* Add a dropdown with multiple values */}
-          <Picker
-            selectedValue={selectedValue.zone}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedValue({ ...selectedValue, zone: itemValue })
-            }
-            style={{
-              height: 50,
-              width: "78%",
-              color: darkGreen,
-              backgroundColor: "rgb(220,220, 220)",
-              marginBottom: 20,
-            }}
-          >
-            <Picker.Item label="Select Zone" value="" />
-            <Picker.Item label="Zone-A" value="Zone-A" />
-            <Picker.Item label="Zone-B" value="Zone-B" />
-          </Picker>
+          
           <Field
             placeholder="Email / Username"
             keyboardType={"email-address"}

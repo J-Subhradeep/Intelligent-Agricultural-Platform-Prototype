@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { clearUserDetails } from "@/components/logout";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Background from "../components/Background";
 
 const AssignTask = () => {
@@ -19,50 +19,47 @@ const AssignTask = () => {
   const [isSidebarVisible, setSidebarVisible] = useState(false);
   const sidebarAnim = useRef(new Animated.Value(windowWidth)).current;
 
-  const [tasks, setTasks] = useState([
-    {
-      taskName: "Submit crop yield report",
-      taskDescription: "Submit crop yield report for Zone-A",
-      taskStatus: "Pending",
-      taskedTo: "John Doe",
-      deadline: "2024-08-01",
-    },
-    {
-      taskName: "Seeds collection report",
-      taskDescription: "Submit the report for total seeds collected today",
-      taskStatus: "Pending",
-      taskedTo: "John Smith",
-      deadline: "2024-08-01",
-    },
-    {
-      taskName: "Disease check",
-      taskDescription: "Check if the zone b plants have any disease or not",
-      taskStatus: "Pending",
-      taskedTo: "Jane Doe",
-      deadline: "2024-08-02",
-    },
-    {
-      taskName: "Zone-A soil report",
-      taskDescription: "Submit the soil report for Zone-A",
-      taskStatus: "Pending",
-      taskedTo: "Jane Smith",
-      deadline: "2024-08-03",
-    },
-    {
-      taskName: "Task 5",
-      taskDescription: "Description of Task 5",
-      taskStatus: "Completed",
-      taskedTo: "John Doe",
-      deadline: "2021-08-05",
-    },
-    {
-      taskName: "Task 6",
-      taskDescription: "Description of Task 5",
-      taskStatus: "Completed",
-      taskedTo: "John Doe",
-      deadline: "2021-08-05",
-    },
-  ]);
+  const [tasks, setTasks] = useState();
+
+  const getUserDetails = async () => {
+    try {
+      const userDetails = await AsyncStorage.getItem("userDetails");
+      return userDetails ? JSON.parse(userDetails) : null;
+    } catch (error) {
+      console.error("Error retrieving user details", error);
+    }
+  };
+
+  const fetchTasksPending = async (id, token) => {
+    try {
+      const response = await fetch(
+        "https://api.web-project.in/search-n-analytics/task/get-pending-tasks?workerId=" + id,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+
+      if (data.length > 0) {
+        setTasks(data);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserDetails().then((userDetails) => {
+      if (userDetails) {
+        fetchTasksPending(userDetails.userId, userDetails.token);
+      }
+    });
+  }, []);
+
 
   const toggleSidebar = () => {
     if (isSidebarVisible) {
@@ -82,7 +79,8 @@ const AssignTask = () => {
   };
 
   return (
-    <Background>
+    // <Background>
+    <ScrollView>
       <View style={{ alignItems: "center" }}>
         <View
           style={{
@@ -123,121 +121,123 @@ const AssignTask = () => {
             />
           </TouchableOpacity>
         </View>
-        <ScrollView
-          contentContainerStyle={{
+        <View
+          style={{
             paddingTop: 30,
             paddingHorizontal: 20,
             alignItems: "center",
             backgroundColor: "white",
             borderTopLeftRadius: 50,
+            width: windowWidth,
+            minHeight: windowHeight,
             borderTopRightRadius: 50,
             paddingBottom: 20,
           }}
         >
-          {tasks.map((task, index) => (
-            <View
-              key={index}
-              style={{
-                width: windowWidth - 40,
-                backgroundColor: "white",
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                elevation: 5,
-                borderRadius: 20,
-                marginVertical: 10,
-                padding: 20,
-              }}
-            >
+          {tasks && tasks.map((task, index) => (
               <View
+                key={index}
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingVertical: 10,
+                  width: windowWidth - 40,
+                  backgroundColor: "white",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+                  borderRadius: 20,
+                  marginVertical: 10,
+                  padding: 20,
                 }}
               >
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontWeight: "bold",
-                      textDecorationLine:
-                        task.taskStatus === "Completed"
-                          ? "line-through"
-                          : "none",
-                    }}
-                  >
-                    {task.taskName}
-                  </Text>
-                  <Text style={{ color: "grey" }}>{task.taskDescription}</Text>
-                </View>
-                <TouchableOpacity
+                <View
                   style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: 15,
-                    backgroundColor: "white",
-                    borderWidth: 2,
-                    borderColor: "green",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  onPress={() => {
-                    let newTasks = [...tasks];
-                    newTasks[index].taskStatus =
-                      newTasks[index].taskStatus === "Pending"
-                        ? "Completed"
-                        : "Pending";
-                    setTasks(newTasks);
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    paddingVertical: 10,
                   }}
                 >
-                  <View
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        textDecorationLine:
+                          task.taskStatus === "Completed"
+                            ? "line-through"
+                            : "none",
+                      }}
+                    >
+                      {task.title}
+                    </Text>
+                    <Text style={{ color: "grey" }}>{task.description}</Text>
+                  </View>
+                  <TouchableOpacity
                     style={{
-                      width: 20,
-                      height: 20,
-                      borderRadius: 10,
-                      backgroundColor:
-                        task.taskStatus === "Pending" ? "white" : "green",
+                      width: 30,
+                      height: 30,
+                      borderRadius: 15,
+                      backgroundColor: "white",
+                      borderWidth: 2,
+                      borderColor: "green",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
-                  ></View>
-                </TouchableOpacity>
-              </View>
-              <View
-                style={{
-                  borderBottomColor: "#dedede",
-                  borderBottomWidth: 1,
-                  width: windowWidth - 80,
-                  marginVertical: 10,
-                }}
-              ></View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingVertical: 2,
-                }}
-              >
-                <View>
-                  <Text style={{ color: "grey", fontSize: 13 }}>Tasked by</Text>
-                  <Text
-                    style={{ color: "grey", fontSize: 13, fontWeight: "bold" }}
+                    onPress={() => {
+                      let newTasks = [...tasks];
+                      newTasks[index].taskStatus =
+                        newTasks[index].taskStatus === "Pending"
+                          ? "Completed"
+                          : "Pending";
+                      setTasks(newTasks);
+                    }}
                   >
-                    {task.taskedTo}
-                  </Text>
+                    <View
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor:
+                          task.taskStatus === "Pending" ? "white" : "green",
+                      }}
+                    ></View>
+                  </TouchableOpacity>
                 </View>
-                <View>
-                  <Text style={{ color: "grey", fontSize: 13 }}>Deadline</Text>
-                  <Text
-                    style={{ color: "grey", fontSize: 13, fontWeight: "bold" }}
-                  >
-                    {task.deadline}
-                  </Text>
+                <View
+                  style={{
+                    borderBottomColor: "#dedede",
+                    borderBottomWidth: 1,
+                    width: windowWidth - 80,
+                    marginVertical: 10,
+                  }}
+                ></View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    paddingVertical: 2,
+                  }}
+                >
+                  <View>
+                    <Text style={{ color: "grey", fontSize: 13 }}>Tasked by</Text>
+                    <Text
+                      style={{ color: "grey", fontSize: 13, fontWeight: "bold" }}
+                    >
+                      {task.taskedTo}
+                    </Text>
+                  </View>
+                  <View>
+                    <Text style={{ color: "grey", fontSize: 13 }}>Deadline</Text>
+                    <Text
+                      style={{ color: "grey", fontSize: 13, fontWeight: "bold" }}
+                    >
+                      {task.deadline}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
-        </ScrollView>
+            ))} 
+        </View>
       </View>
 
       {isSidebarVisible && (
@@ -258,7 +258,8 @@ const AssignTask = () => {
           </View>
         </Animated.View>
       )}
-    </Background>
+    </ScrollView>
+    // </Background>
   );
 };
 
