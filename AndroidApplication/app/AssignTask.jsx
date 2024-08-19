@@ -12,6 +12,7 @@ import {
 import { clearUserDetails } from "@/components/logout";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Background from "../components/Background";
+import { Link } from "expo-router";
 
 const AssignTask = () => {
   const windowWidth = Dimensions.get("window").width;
@@ -77,7 +78,24 @@ const AssignTask = () => {
       }).start();
     }
   };
-
+  
+  function formatDeadline(isoString) {
+    const date = new Date(isoString);
+  
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12; 
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`;
+    return formattedDate;
+  }
+  
   return (
     // <Background>
     <ScrollView>
@@ -135,21 +153,23 @@ const AssignTask = () => {
           }}
         >
           {tasks && tasks.map((task, index) => (
-              <View
-                key={index}
-                style={{
-                  width: windowWidth - 40,
-                  backgroundColor: "white",
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
-                  borderRadius: 20,
-                  marginVertical: 10,
-                  padding: 20,
-                }}
-              >
+            <View
+              key={index}
+              style={{
+                width: windowWidth - 40,
+                backgroundColor: "white",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+                borderRadius: 20,
+                marginVertical: 10,
+                padding: 20,
+              }}
+            >
+
+              <Link href={`/Report?id=${task.id}`}>
                 <View
                   style={{
                     flexDirection: "row",
@@ -166,42 +186,15 @@ const AssignTask = () => {
                           task.taskStatus === "Completed"
                             ? "line-through"
                             : "none",
+                        flexWrap: "wrap",
+                        maxWidth: windowWidth - 120,
                       }}
+                      ellipsizeMode="tail"
                     >
                       {task.title}
                     </Text>
                     <Text style={{ color: "grey" }}>{task.description}</Text>
                   </View>
-                  <TouchableOpacity
-                    style={{
-                      width: 30,
-                      height: 30,
-                      borderRadius: 15,
-                      backgroundColor: "white",
-                      borderWidth: 2,
-                      borderColor: "green",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                    onPress={() => {
-                      let newTasks = [...tasks];
-                      newTasks[index].taskStatus =
-                        newTasks[index].taskStatus === "Pending"
-                          ? "Completed"
-                          : "Pending";
-                      setTasks(newTasks);
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: 10,
-                        backgroundColor:
-                          task.taskStatus === "Pending" ? "white" : "green",
-                      }}
-                    ></View>
-                  </TouchableOpacity>
                 </View>
                 <View
                   style={{
@@ -219,24 +212,22 @@ const AssignTask = () => {
                   }}
                 >
                   <View>
-                    <Text style={{ color: "grey", fontSize: 13 }}>Tasked by</Text>
-                    <Text
-                      style={{ color: "grey", fontSize: 13, fontWeight: "bold" }}
-                    >
-                      {task.taskedTo}
-                    </Text>
-                  </View>
-                  <View>
                     <Text style={{ color: "grey", fontSize: 13 }}>Deadline</Text>
                     <Text
                       style={{ color: "grey", fontSize: 13, fontWeight: "bold" }}
                     >
-                      {task.deadline}
+                      {/* deadline looks like 2024-08-18T21:58:02+05:30
+                        make it like 2024-08-18 9:58 PM
+                      */}
+
+{formatDeadline(task.deadline)}
+
                     </Text>
                   </View>
                 </View>
-              </View>
-            ))} 
+              </Link>
+            </View>
+          ))}
         </View>
       </View>
 
